@@ -44,7 +44,7 @@ app.get('/donors', async (req, res) => {
 
         // Access the 'donor' collection and search with the query
         const donors = await db.collection('donors').find(query).toArray();
-
+        console.log(donors);
         res.send(donors);
     } catch (error) {
         console.error('Error fetching donors:', error);
@@ -55,7 +55,6 @@ app.get('/donors', async (req, res) => {
 app.post('/beadonor', async (req, res) => {
     const user = (req.body);
     console.log(user);
-    res.send(user);
     try {
 
         const query = {
@@ -63,9 +62,10 @@ app.post('/beadonor', async (req, res) => {
         };
 
         const checkUser = await db.collection('donors').find(query).toArray();
+       console.log(checkUser);
         if (checkUser.length) {
             console.log('user exists');
-            
+            res.send(checkUser[0]);
         } else {
 
             // Select the database and collection
@@ -75,6 +75,34 @@ app.post('/beadonor', async (req, res) => {
             const result = await donors.insertOne(user);
 
             console.log(`New user inserted with ID: ${result.insertedId}`);
+            res.send(user);
+        }
+        //res.send(true);
+    } catch (error) {
+        console.error('Error inserting user document:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+
+})
+
+//isDonor checkUser
+app.get('/isdonor', async (req, res) => {
+    const email = req.query.email;
+    console.log(email);
+   // res.send(user);
+    try {
+
+        const query = {
+            email
+        };
+
+        const checkUser = await db.collection('donors').find(query).toArray();
+        if (checkUser.length) {
+          console.log("donorrrr");
+            res.send(checkUser[0]);
+        } else {
+          console.log("nah hbe na");
+          res.send({isDonor: false});
         }
     } catch (error) {
         console.error('Error inserting user document:', error);
